@@ -3,6 +3,7 @@ const moment = require('moment');
 module.exports = async function get_films_from_db(db, film_id, callback) {
   let list_of_ids_from_db = [];
   let films_from_db = [];
+  let genre;
 
   const QUERY = 
   `SELECT * FROM films where genre_id IN (
@@ -19,7 +20,11 @@ module.exports = async function get_films_from_db(db, film_id, callback) {
         films_from_db.push(row);
         list_of_ids_from_db.push(row.id);
       };         
-    });    
-    callback(list_of_ids_from_db, films_from_db, err);
+    });
+
+    db.all(`SELECT name FROM genres where id=${films_from_db[0]['genre_id']};`, function(err,data) {   
+      genre = data;
+      callback(list_of_ids_from_db, films_from_db, genre, err);
+    })    
   })
 };
