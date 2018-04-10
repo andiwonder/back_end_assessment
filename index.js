@@ -91,7 +91,12 @@ const getFilmsFromDB = (db, film_id) => {
       );`;
 
     db.all(QUERY, function(err, rows) {
-      if (err) reject(err);
+      if (err) {
+        // TO-DO cannot debug to catch err, must trace
+        // causes app to crash
+        console.log(err);
+        reject(err);
+      }
       const queryReleaseDate = moment(rows.find(x => x.id === parseInt(film_id)).release_date);
       rows.map(row => {
         if (
@@ -177,15 +182,15 @@ const filterFilmsMeta = (films, query) => {
   }
 };
 
-// route handling
-
+// route validation, check for id, limit, and offset
 const validateRoute = (req, res, next) => {
+  const msg = { message: 'key missing' };
   if (isNaN(parseInt(req.params.id))) {
-    res.status(422).send({ message: 'key missing' });
+    res.status(422).send(msg);
   } else if (req.query.limit && isNaN(parseInt(req.query.limit))) {
-    res.status(422).send({ message: 'key missing' });
+    res.status(422).send(msg);
   } else if (req.query.offset && isNaN(parseInt(req.query.offset))) {
-    res.status(422).send({ message: 'key missing' });
+    res.status(422).send(msg);
   }
   next();
 };
