@@ -17,9 +17,9 @@ const { PORT = 3000, NODE_ENV = 'development', DB_PATH = './db/database.db' } = 
 Promise.resolve()
   .then(() => app.listen(PORT, () => console.log(`App listening on port ${PORT}`)))
   .then(() => {
-    app.get('/films/:id/recommendations', getFilmRecommendations);
-    app.get('*', function(req, res) {
-      res.status(404).send('key missing');
+    app.get('/films/:id/recommendations', validateRoute, getFilmRecommendations);
+    app.get('/*', function(req, res) {
+      res.status(404).send({ message: 'key missing' });
     });
   })
   .catch(err => {
@@ -122,7 +122,7 @@ const getFilmsFromAPI = async films => {
   try {
     response = await axios.get(`${URL}`, { params: { films: films } });
   } catch (err) {
-    console.log(err);
+    throw new Error(422);
   }
   return response.data;
 };
@@ -175,6 +175,19 @@ const filterFilmsMeta = (films, query) => {
   } else {
     return films;
   }
+};
+
+// route handling
+
+const validateRoute = (req, res, next) => {
+  if (isNaN(parseInt(req.params.id))) {
+    res.status(422).send({ message: 'key missing' });
+  } else if (req.query.limit && isNaN(parseInt(req.query.limit))) {
+    res.status(422).send({ message: 'key missing' });
+  } else if (req.query.offset && isNaN(parseInt(req.query.offset))) {
+    res.status(422).send({ message: 'key missing' });
+  }
+  next();
 };
 
 module.exports = app;
