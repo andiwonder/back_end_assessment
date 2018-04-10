@@ -132,7 +132,7 @@ const getFilmsFromAPI = async films => {
   return response.data;
 };
 
-// check if films have atleast 4 ratings and average for ratings is above 4
+// check if films have atleast 5 ratings and average for ratings is above 4
 // return objects with info
 const filterFilmsRatings = (filmsFromAPI, filmsFromDB) => {
   let filmsWithMinRatings = [];
