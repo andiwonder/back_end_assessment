@@ -57,12 +57,12 @@ function getFilmRecommendations(req, res) {
 
 // DB Queries
 // getFilmsFromDb, then getGenreFromDB
-const getInfoFromDB = (db, film_id) => {
+const getInfoFromDB = (db, filmID) => {
   let filmsArray = [];
   let idsArray = [];
 
   return new Promise((resolve, reject) => {
-    getFilmsFromDB(db, film_id)
+    getFilmsFromDB(db, filmID)
       .then(({ films, ids }) => {
         filmsArray = films;
         idsArray = ids;
@@ -81,13 +81,13 @@ const getInfoFromDB = (db, film_id) => {
   });
 };
 
-const getFilmsFromDB = (db, film_id) => {
+const getFilmsFromDB = (db, filmID) => {
   return new Promise((resolve, reject) => {
     let filmsArray = [];
     let idsArray = [];
 
     const QUERY = `SELECT * FROM films WHERE genre_id IN (
-        SELECT genre_id FROM films WHERE id = ${film_id}
+        SELECT genre_id FROM films WHERE id = ${filmID}
       );`;
 
     db.all(QUERY, function(err, rows) {
@@ -97,7 +97,7 @@ const getFilmsFromDB = (db, film_id) => {
         console.log(err);
         reject(err);
       }
-      const queryReleaseDate = moment(rows.find(x => x.id === parseInt(film_id)).release_date);
+      const queryReleaseDate = moment(rows.find(x => x.id === parseInt(filmID)).release_date);
       rows.map(row => {
         if (
           queryReleaseDate.diff(row.release_date, 'year') <= 15 &&
@@ -112,9 +112,9 @@ const getFilmsFromDB = (db, film_id) => {
   });
 };
 
-const getGenreFromDB = (db, genre_id) => {
+const getGenreFromDB = (db, genreID) => {
   return new Promise((resolve, reject) => {
-    db.all(`SELECT name FROM genres WHERE id=${genre_id};`, function(err, data) {
+    db.all(`SELECT name FROM genres WHERE id=${genreID};`, function(err, data) {
       if (err) reject(err);
       resolve(data);
     });
